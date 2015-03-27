@@ -145,8 +145,17 @@ void WhiteBoardDaemon::autoCalibration()
 
 	// Poly Approximate
 	vector<Point> poly, quad;
-	approxPolyDP(projectArea, poly, 5, true);
-	poly2quad(poly, quad); // from a polygon to a quadrange
+	int nlines = 0;//PolyPoly counter
+	double simplicity = 5;//Increment of adjustment, lower numbers may be more precise vs. high numbers being faster to cycle.
+	while (nlines != 4)//Adjust this 
+	{
+		approxPolyDP(projectArea, poly, simplicity, true);
+		nlines = poly.size();
+		simplicity += 5;
+	}
+	quad = poly;
+	//approxPolyDP(projectArea, poly, 5, true);
+	//poly2quad(poly, quad); // from a polygon to a quadrange
 	// Draw quadrangle line
 	vector<Point>::const_iterator itp = quad.begin();
 	for (; itp != quad.end(); itp++)
@@ -158,7 +167,7 @@ void WhiteBoardDaemon::autoCalibration()
 			//line(result, *itp, *(poly.begin()), Scalar(0), 2);
 			line(bframe, *itp, *(quad.begin()), Scalar(0,255,0), 2);
 	}
-	vector<Point>::const_iterator itp2 = poly.begin();
+	/*vector<Point>::const_iterator itp2 = poly.begin();
 	for (; itp2 != poly.end(); itp2++)
 	{
 		if (itp2 != (poly.end() - 1))
@@ -167,7 +176,7 @@ void WhiteBoardDaemon::autoCalibration()
 		else
 			//line(result, *itp, *(poly.begin()), Scalar(0), 2);
 			line(bframe, *itp2, *(poly.begin()), Scalar(0, 0, 255), 2);
-	}
+	}*/
 
 
 	//imshow("a", aframe_gray);
