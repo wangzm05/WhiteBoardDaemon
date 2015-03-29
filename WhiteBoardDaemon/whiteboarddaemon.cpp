@@ -10,6 +10,8 @@ WhiteBoardDaemon::WhiteBoardDaemon(QWidget *parent)
 	connect(timer, SIGNAL(timeout()), this, SLOT(readFarme()));  
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(startCamara()));
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stopCamara()));
+
+	status = BEFORE_CALIBRATION;
 }
 
 WhiteBoardDaemon::~WhiteBoardDaemon()
@@ -105,6 +107,7 @@ void WhiteBoardDaemon::autoCalibration()
 	//namedWindow("a", 1);
 	//namedWindow("b", 1);
 	namedWindow("area", 1);
+	//namedWindow("allcontours", 1);
 	namedWindow("binframe", 1);
 
 	// 4. Gray pictures
@@ -138,15 +141,11 @@ void WhiteBoardDaemon::autoCalibration()
 			max = it->size();
 		}
 	}
-	//vector<vector<Point>> maxContour;
-	//maxContour.push_back(projectArea);
-	Mat result(binframe.size(), CV_8U, Scalar(255));
-	//drawContours(result, maxContour, -1, Scalar(0), 2);
 
 	// Poly Approximate
-	vector<Point> poly, quad;
-	int nlines = 0;//PolyPoly counter
-	double simplicity = 5;//Increment of adjustment, lower numbers may be more precise vs. high numbers being faster to cycle.
+	vector<Point> poly;
+	int nlines = 0;//Edge counter
+	double simplicity = 5;//Increment of adjustment.
 	while (nlines != 4)//Adjust this 
 	{
 		approxPolyDP(projectArea, poly, simplicity, true);
@@ -161,10 +160,8 @@ void WhiteBoardDaemon::autoCalibration()
 	for (; itp != quad.end(); itp++)
 	{
 		if (itp != (quad.end()-1))
-			//line(result, *itp, *(itp+1), Scalar(0), 2);
 			line(bframe, *itp, *(itp + 1), Scalar(0,255,0), 2);
 		else
-			//line(result, *itp, *(poly.begin()), Scalar(0), 2);
 			line(bframe, *itp, *(quad.begin()), Scalar(0,255,0), 2);
 	}
 	/*vector<Point>::const_iterator itp2 = poly.begin();
@@ -183,7 +180,16 @@ void WhiteBoardDaemon::autoCalibration()
 	//imshow("b", bframe_gray);
 
 	//imshow("binframe", binframe);
-	//imshow("area", result);
+
+	mask = Mat::zeros(binframe.size(), CV_8U);
+	vector<vector<Point>> result(1, quad); 
+	drawContours(mask, result, -1, Scalar(255), FILLED);
+
+	vector<Point> screen = getOrderedScreenVerticles(quad, w, h); 
+	warpMatrix = getPerspectiveTransform(quad, screen);
+
+	status = AFTER_CALIBRATION;
+
 	imshow("area", bframe);
 }
 
@@ -224,4 +230,31 @@ void WhiteBoardDaemon::poly2quad(const vector<Point> poly, vector<Point> &quad)
 
 		quad.erase(maxAngle);
 	}
+}
+
+vector<Point> WhiteBoardDaemon::getOrderedScreenVerticles(vector<Point> quad, int w, int h)
+{
+	int sumX = 0, sumY = 0;
+	double meanX, meanY;
+	for (int i = 0; i < 4; i++)
+	{
+		sumX += quad[i].x;
+		sumY += quad[i].y;
+	}
+	meanX = sumX / 4.0f;
+	meanY = sumY / 4.0f;
+
+	vector<Point> screen;
+	for (int i = 0; i < 4; i++)
+	{
+		if (quad[i].x < meanX && quad[i].y < meanY)
+			screen.push_back(Point(0,0));
+		else if (quad[i].x < meanX && quad[i].y >= meanY)
+			screen.push_back(Point(0, h));
+		else if (quad[i].x >= meanX && quad[i].y < meanY)
+			screen.push_back(Point(w, 0));
+		else if (quad[i].x >= meanX && quad[i].y >= meanY)
+			screen.push_back(Point(w, h));
+	}
+	return screen;
 }

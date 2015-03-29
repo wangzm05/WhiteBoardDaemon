@@ -9,6 +9,7 @@
 #include <QImage>  
 #include <QTimer>
 #include "opencv2/opencv.hpp"
+#include "utility.h"
 
 using namespace cv;
 using namespace std;
@@ -24,10 +25,15 @@ public:
 private:
 	Ui::WhiteBoardDaemonClass ui;
 	QTimer    *timer;
-	VideoCapture cam;// camera device  
+	VideoCapture cam;// camera device
+	vector<Point> quad; // project area: a quadrangle
+	Mat mask; // to mask the area of interest
+	Mat warpMatrix; // Perspective transformation
 	//Mat  frame;// frame struct
 	Mat takePicture();  // take photo
+	int status;
 	void poly2quad(const vector<Point> poly, vector<Point> &quad);
+	vector<Point> getOrderedScreenVerticles(vector<Point> quad, int w, int h);
 
 private Q_SLOTS:
 	void configure();

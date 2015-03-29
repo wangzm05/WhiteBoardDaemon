@@ -84,5 +84,8 @@
     <ClInclude Include="GeneratedFiles\ui_whiteboarddaemon.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
