@@ -10,7 +10,12 @@ WhiteBoardDaemon::WhiteBoardDaemon(QWidget *parent)
 	connect(timer, SIGNAL(timeout()), this, SLOT(readFarme()));  
 	connect(ui.actionStart, SIGNAL(triggered()), this, SLOT(startCamara()));
 	connect(ui.actionStop, SIGNAL(triggered()), this, SLOT(stopCamara()));
+	connect(ui.actionCamera_Debug_Mode,SIGNAL(triggered()), this, SLOT(setCameraMode()));
+	connect(ui.actionLaser_Debug_Mode, SIGNAL(triggered()), this, SLOT(setLaserMode()));
+	connect(ui.actionIn_use_Mode, SIGNAL(triggered()), this, SLOT(setUseMode()));
 
+	mode = CAMERA_MODE;
+	preview = STOP_PREVIEW;
 	status = BEFORE_CALIBRATION;
 }
 
@@ -29,7 +34,24 @@ void WhiteBoardDaemon::configure()
 
 void WhiteBoardDaemon::startCamara()
 {
-	cam.open(0); // open the default camera
+	QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+	int deviceID = -1, i=0;
+	foreach(const QCameraInfo &cameraInfo, cameras) {
+		if (cameraInfo.deviceName().contains(DEVICE_NAME)) {
+			deviceID = i;
+			break;
+		}
+		i++;
+	}
+
+	if (deviceID == -1){
+		QMessageBox msgBox;
+		msgBox.setText("Our camera is not found.");
+		msgBox.exec();
+		return;
+	}
+
+	cam.open(deviceID); // open a specific camera
 	if (!cam.isOpened())
 	{
 		QMessageBox msgBox;
@@ -37,7 +59,33 @@ void WhiteBoardDaemon::startCamara()
 		msgBox.exec();
 		return;
 	}
+	
+	if (mode == LASER_MODE) {
+		// ALC_Initialize
+		int nRet = ALC_Initialize();
+
+		if (nRet == 0){
+			QMessageBox msgBox;
+			msgBox.setText("Initialization Error");
+			msgBox.exec();
+			return;
+		}
+
+		int bRet = ALC_WriteASICRegister(0xB70, 1);
+
+		//display error message or flash data
+		if (!bRet){
+			QMessageBox msgBox;
+			msgBox.setText("Initialization Error");
+			msgBox.exec();
+			return;
+		}
+	}
+
 	timer->start(30);
+	ui.actionStart->setChecked(true);
+	ui.actionStop->setChecked(false);
+	preview = START_PREVIEW;
 }
 
 void WhiteBoardDaemon::readFarme()
@@ -56,6 +104,9 @@ void WhiteBoardDaemon::readFarme()
 void WhiteBoardDaemon::stopCamara()
 {
 	timer->stop(); 
+	ui.actionStart->setChecked(false);
+	ui.actionStop->setChecked(true);
+	preview = STOP_PREVIEW;
 }
 
 Mat WhiteBoardDaemon::takePicture()
@@ -257,4 +308,46 @@ vector<Point> WhiteBoardDaemon::getOrderedScreenVerticles(vector<Point> quad, in
 			screen.push_back(Point(w, h));
 	}
 	return screen;
+}
+
+void WhiteBoardDaemon::setCameraMode()
+{
+	if (mode == CAMERA_MODE) return;
+
+	ui.actionCamera_Debug_Mode->setChecked(true);
+	ui.actionLaser_Debug_Mode->setChecked(false);
+	ui.actionIn_use_Mode->setChecked(false);
+
+	mode = CAMERA_MODE;
+	if (preview == START_PREVIEW) {
+		startCamara();
+	}
+}
+
+void WhiteBoardDaemon::setLaserMode()
+{
+	if (mode == LASER_MODE) return;
+
+	ui.actionCamera_Debug_Mode->setChecked(false);
+	ui.actionLaser_Debug_Mode->setChecked(true);
+	ui.actionIn_use_Mode->setChecked(false);
+
+	mode = LASER_MODE;
+	if (preview == START_PREVIEW) {
+		startCamara();
+	}
+}
+
+void WhiteBoardDaemon::setUseMode()
+{
+	if (mode == NORMAL_MODE) return;
+
+	ui.actionCamera_Debug_Mode->setChecked(false);
+	ui.actionLaser_Debug_Mode->setChecked(false);
+	ui.actionIn_use_Mode->setChecked(true);
+
+	mode = NORMAL_MODE;
+	if (preview == START_PREVIEW) {
+		startCamara();
+	}
 }

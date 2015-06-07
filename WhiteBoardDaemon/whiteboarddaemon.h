@@ -8,8 +8,11 @@
 
 #include <QImage>  
 #include <QTimer>
+#include <QtMultimedia/Qcamerainfo.h>
+#include <QtMultimedia/Qcamera.h>
 #include "opencv2/opencv.hpp"
 #include "utility.h"
+#include "ACamDll.h"
 
 using namespace cv;
 using namespace std;
@@ -32,6 +35,8 @@ private:
 	//Mat  frame;// frame struct
 	Mat takePicture();  // take photo
 	int status;
+	int mode; // 1: Camera; 2: Laser; 3: normal
+	int preview; // 1: start; 0: stop;
 	void poly2quad(const vector<Point> poly, vector<Point> &quad);
 	vector<Point> getOrderedScreenVerticles(vector<Point> quad, int w, int h);
 
@@ -41,6 +46,9 @@ private Q_SLOTS:
 	void readFarme();       // read a frame  
 	void stopCamara();     // stop camera
 	void autoCalibration();
+	void setCameraMode();
+	void setLaserMode();
+	void setUseMode();
 };
 
 #endif // WHITEBOARDDAEMON_H

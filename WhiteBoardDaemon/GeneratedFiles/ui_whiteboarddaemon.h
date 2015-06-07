@@ -61,8 +61,10 @@ public:
         WhiteBoardDaemonClass->resize(651, 564);
         actionStart = new QAction(WhiteBoardDaemonClass);
         actionStart->setObjectName(QStringLiteral("actionStart"));
+        actionStart->setCheckable(true);
         actionStop = new QAction(WhiteBoardDaemonClass);
         actionStop->setObjectName(QStringLiteral("actionStop"));
+        actionStop->setCheckable(true);
         actionConfiguration = new QAction(WhiteBoardDaemonClass);
         actionConfiguration->setObjectName(QStringLiteral("actionConfiguration"));
         actionAutomatic_blocking_noise = new QAction(WhiteBoardDaemonClass);
@@ -83,10 +85,14 @@ public:
         action36_points->setObjectName(QStringLiteral("action36_points"));
         actionCamera_Debug_Mode = new QAction(WhiteBoardDaemonClass);
         actionCamera_Debug_Mode->setObjectName(QStringLiteral("actionCamera_Debug_Mode"));
+        actionCamera_Debug_Mode->setCheckable(true);
+        actionCamera_Debug_Mode->setChecked(true);
         actionLaser_Debug_Mode = new QAction(WhiteBoardDaemonClass);
         actionLaser_Debug_Mode->setObjectName(QStringLiteral("actionLaser_Debug_Mode"));
+        actionLaser_Debug_Mode->setCheckable(true);
         actionIn_use_Mode = new QAction(WhiteBoardDaemonClass);
         actionIn_use_Mode->setObjectName(QStringLiteral("actionIn_use_Mode"));
+        actionIn_use_Mode->setCheckable(true);
         actionLanguage = new QAction(WhiteBoardDaemonClass);
         actionLanguage->setObjectName(QStringLiteral("actionLanguage"));
         actionAbout = new QAction(WhiteBoardDaemonClass);

@@ -99,11 +99,17 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionStart">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Start</string>
    </property>
   </action>
   <action name="actionStop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Stop</string>
    </property>
@@ -154,16 +160,28 @@
    </property>
   </action>
   <action name="actionCamera_Debug_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Camera Debug Mode</string>
    </property>
   </action>
   <action name="actionLaser_Debug_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Laser Debug Mode</string>
    </property>
   </action>
   <action name="actionIn_use_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Normal Service Mode</string>
    </property>
