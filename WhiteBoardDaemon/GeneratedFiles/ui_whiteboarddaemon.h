@@ -43,6 +43,7 @@ public:
     QAction *actionIn_use_Mode;
     QAction *actionLanguage;
     QAction *actionAbout;
+    QAction *actionSpot_Measurement;
     QWidget *centralWidget;
     QLabel *CamView;
     QMenuBar *menuBar;
@@ -97,6 +98,8 @@ public:
         actionLanguage->setObjectName(QStringLiteral("actionLanguage"));
         actionAbout = new QAction(WhiteBoardDaemonClass);
         actionAbout->setObjectName(QStringLiteral("actionAbout"));
+        actionSpot_Measurement = new QAction(WhiteBoardDaemonClass);
+        actionSpot_Measurement->setObjectName(QStringLiteral("actionSpot_Measurement"));
         centralWidget = new QWidget(WhiteBoardDaemonClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         CamView = new QLabel(centralWidget);
@@ -132,6 +135,7 @@ public:
         menuActions->addAction(actionStop);
         menuActions->addSeparator();
         menuActions->addAction(actionConfiguration);
+        menuActions->addAction(actionSpot_Measurement);
         menuActions->addAction(actionAutomatic_blocking_noise);
         menuActions->addAction(menuManual_covering_area->menuAction());
         menuActions->addAction(menuManual_Calibration->menuAction());
@@ -153,6 +157,7 @@ public:
         QObject::connect(actionConfiguration, SIGNAL(triggered()), WhiteBoardDaemonClass, SLOT(configure()));
         QObject::connect(actionAutomatical_Calibration, SIGNAL(triggered()), WhiteBoardDaemonClass, SLOT(autoCalibration()));
         QObject::connect(actionExit, SIGNAL(triggered()), WhiteBoardDaemonClass, SLOT(close()));
+		QObject::connect(actionSpot_Measurement, SIGNAL(triggered()), WhiteBoardDaemonClass, SLOT(spotMeasurement()));
 
         QMetaObject::connectSlotsByName(WhiteBoardDaemonClass);
     } // setupUi
@@ -176,6 +181,7 @@ public:
         actionIn_use_Mode->setText(QApplication::translate("WhiteBoardDaemonClass", "Normal Service Mode", 0));
         actionLanguage->setText(QApplication::translate("WhiteBoardDaemonClass", "Language", 0));
         actionAbout->setText(QApplication::translate("WhiteBoardDaemonClass", "About", 0));
+        actionSpot_Measurement->setText(QApplication::translate("WhiteBoardDaemonClass", "Spot Measurement", 0));
         CamView->setText(QString());
         menuActions->setTitle(QApplication::translate("WhiteBoardDaemonClass", "Actions", 0));
         menuManual_covering_area->setTitle(QApplication::translate("WhiteBoardDaemonClass", "Manual covering area", 0));

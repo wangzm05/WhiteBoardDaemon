@@ -62,6 +62,7 @@
     <addaction name="actionStop"/>
     <addaction name="separator"/>
     <addaction name="actionConfiguration"/>
+    <addaction name="actionSpot_Measurement"/>
     <addaction name="actionAutomatic_blocking_noise"/>
     <addaction name="menuManual_covering_area"/>
     <addaction name="menuManual_Calibration"/>
@@ -194,6 +195,11 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionSpot_Measurement">
+   <property name="text">
+    <string>Spot Measurement</string>
    </property>
   </action>
  </widget>
